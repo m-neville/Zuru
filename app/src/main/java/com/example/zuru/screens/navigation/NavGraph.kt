@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.zuru.screens.aboutScreen.AboutUsScreen
 import com.example.zuru.screens.authScreen.AuthScreen
 import com.example.zuru.screens.booking_confirmation.BookingConfirmationScreen
 import com.example.zuru.screens.changePassword.ChangePasswordScreen
@@ -70,6 +71,10 @@ fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
         composable("change_password") {
             ChangePasswordScreen(navController)
         }
+        composable("about") {
+            AboutUsScreen(navController)
+        }
+
 
         composable(
             route = "payments/{destination}",

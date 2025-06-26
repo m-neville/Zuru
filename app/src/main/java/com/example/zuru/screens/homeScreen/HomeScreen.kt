@@ -110,6 +110,11 @@ fun HomeScreen(navController: NavController) {
                         title = "Contact Us",
                         icon = painterResource(id = R.drawable.contact_us)
                     ) { navController.navigate("contact") }
+                    AnimatedButton(
+                        delayMillis = 300,
+                        title = "Settings",
+                        icon = painterResource(id = R.drawable.settings)
+                    ) { navController.navigate("settings") }
                 }
             }
         }

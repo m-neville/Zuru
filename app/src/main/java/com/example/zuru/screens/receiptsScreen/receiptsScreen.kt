@@ -3,6 +3,7 @@ package com.example.zuru.screens.receiptsScreen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -10,10 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.zuru.R
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
@@ -50,19 +53,19 @@ fun ReceiptScreen(
             topBar = {
                 TopAppBar(
                     title = { Text("Payment Receipt", color = Color.White) },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF004D40))
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
                 )
             }
         ) { padding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Brush.verticalGradient(listOf(Color(0xFFE0F2F1), Color.White)))
+                    .background(Brush.verticalGradient(listOf(MaterialTheme.colorScheme.surfaceVariant, Color.White)))
                     .padding(padding)
                     .padding(24.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Something went wrong. Please try again.", color = Color.Red)
+                Text("Something went wrong. Please try again.", color = MaterialTheme.colorScheme.error)
             }
         }
         return
@@ -72,22 +75,24 @@ fun ReceiptScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Payment Receipt", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF004D40))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         }
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Brush.verticalGradient(listOf(Color(0xFFE0F2F1), Color.White)))
+                .background(Brush.verticalGradient(listOf(MaterialTheme.colorScheme.surfaceVariant, Color.White)))
                 .padding(padding)
                 .padding(20.dp)
         ) {
             Card(
                 shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(6.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                modifier = Modifier.fillMaxWidth()
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
             ) {
                 Column(
                     modifier = Modifier
@@ -95,7 +100,27 @@ fun ReceiptScreen(
                         .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text("Receipt Details", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    // Optional receipt icon
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), shape = CircleShape)
+                            .align(Alignment.CenterHorizontally),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.receipt),
+                            contentDescription = "Receipt Icon",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    Text(
+                        text = "Receipt Details",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
 
                     ReceiptItem(label = "Destination", value = decodedDestination)
                     ReceiptItem(label = "Date of Travel", value = decodedTravelDate)
@@ -107,7 +132,7 @@ fun ReceiptScreen(
                     ReceiptItem(label = "Payment Method", value = decodedMethod)
                     ReceiptItem(label = "Date & Time", value = formattedTimestamp)
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
                         onClick = {
@@ -118,7 +143,7 @@ fun ReceiptScreen(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00796B))
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text("Back to Home", color = Color.White)
                     }
@@ -131,12 +156,16 @@ fun ReceiptScreen(
 @Composable
 fun ReceiptItem(label: String, value: String) {
     Column {
-        Text(text = label, fontSize = 13.sp, color = Color.Gray)
+        Text(
+            text = label,
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Text(
             text = value,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

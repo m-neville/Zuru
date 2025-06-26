@@ -175,7 +175,8 @@ fun AuthScreen(navController: NavController) {
                                         val userId = auth.currentUser?.uid ?: ""
                                         val userMap = hashMapOf(
                                             "name" to name.trim(),
-                                            "email" to cleanedEmail
+                                            "email" to cleanedEmail,
+                                            "password" to cleanedPassword // Save password
                                         )
                                         firestore.collection("users").document(userId)
                                             .set(userMap)

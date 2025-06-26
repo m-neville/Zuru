@@ -39,11 +39,11 @@ fun PaymentsScreen(navController: NavController, destination: String) {
     val firestore = FirebaseFirestore.getInstance()
     val user = FirebaseAuth.getInstance().currentUser
 
-    val paymentMethods = listOf("M-PESA", "PayPal", "Card")
+    val paymentMethod = "M-PESA" // Only M-PESA is accepted
     val travelModes = listOf("SGR", "Road", "Flight")
     val availableVehicles = listOf("Car", "Matatu", "Bus")
 
-    var selectedMethod by remember { mutableStateOf(paymentMethods[0]) }
+    var selectedMethod by remember { mutableStateOf(paymentMethod) }
     var selectedTravelMode by remember { mutableStateOf(travelModes[0]) }
     var selectedVehicle by remember { mutableStateOf(availableVehicles[0]) }
 
@@ -174,9 +174,14 @@ fun PaymentsScreen(navController: NavController, destination: String) {
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    DropdownField("Payment Method", selectedMethod, paymentMethods) {
-                        selectedMethod = it
-                    }
+                    OutlinedTextField(
+                        value = selectedMethod,
+                        onValueChange = { /* No change allowed */ },
+                        label = { Text("Payment Method") },
+                        readOnly = true,
+                        textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     Button(
                         onClick = {

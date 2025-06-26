@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +29,9 @@ fun EditProfileScreen(navController: NavController) {
     }
 
     var displayName by remember { mutableStateOf(user.displayName ?: "") }
+    var email by remember { mutableStateOf(user.email ?: "") }
+    var currentPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -51,26 +55,99 @@ fun EditProfileScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = currentPassword,
+                onValueChange = { currentPassword = it },
+                label = { Text("Current Password (Optional)") },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = newPassword,
+                onValueChange = { newPassword = it },
+                label = { Text("New Password (Optional)") },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                enabled = currentPassword.isNotEmpty() // Enable only if current password is provided
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             Button(
                 onClick = {
-                    user.updateProfile(
-                        UserProfileChangeRequest.Builder()
-                            .setDisplayName(displayName)
-                            .build()
-                    ).addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            Toast.makeText(context, "Profile Updated", Toast.LENGTH_SHORT).show()
-                            navController.popBackStack()
-                        } else {
-                            Toast.makeText(context, "Failed to update profile", Toast.LENGTH_SHORT).show()
-                        }
+                    var profileUpdated = false
+                    var emailUpdated = false
+                    var passwordUpdated = false
+
+                    // Update Display Name
+                    if (displayName != user.displayName) {
+                        user.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(displayName).build())
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    profileUpdated = true
+                                    Toast.makeText(context, "Display Name Updated", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Failed to update display name: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    }
+
+                    // Update Email
+                    if (email != user.email) {
+                        user.updateEmail(email)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    emailUpdated = true
+                                    Toast.makeText(context, "Email Updated. Please verify your new email.", Toast.LENGTH_LONG).show()
+                                } else {
+                                    Toast.makeText(context, "Failed to update email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    }
+
+                    // Update Password
+                    if (currentPassword.isNotEmpty() && newPassword.isNotEmpty()) {
+                        // Re-authenticate user first for security reasons if changing password
+                        // This is a simplified example. For production, handle re-authentication properly.
+                        user.updatePassword(newPassword)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    passwordUpdated = true
+                                    Toast.makeText(context, "Password Updated", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Failed to update password: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    }
+                    // Optionally, navigate back or show a combined success message
+                    // For simplicity, individual toasts are shown.
+                    if (profileUpdated || emailUpdated || passwordUpdated) {
+                         navController.popBackStack() // Navigate back if any update was attempted
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = displayName.isNotBlank() || email.isNotBlank() || (currentPassword.isNotEmpty() && newPassword.isNotEmpty())
             ) {
                 Text("Save Changes")
             }
         }
     }
 }
+
+
 
