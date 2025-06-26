@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "425941948509",
+    "project_id": "zuru-b7ea2",
+    "storage_bucket": "zuru-b7ea2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:425941948509:android:e067d31b8bce197de755b4",
+        "android_client_info": {
+          "package_name": "com.example.zuru"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIFBa7HZT0MqNa_lg195YTjKUVGXYzCmI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
