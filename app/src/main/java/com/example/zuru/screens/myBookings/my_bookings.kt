@@ -11,11 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,7 +39,7 @@ fun MyBookingsScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Bookings") },
+                title = { Text("My Destinations") },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF004D40), titleContentColor = Color.White)
             )
         }

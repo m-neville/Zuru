@@ -159,7 +159,7 @@ fun AuthScreen(navController: NavController) {
                                         }
 
                                         Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
-                                        navController.navigate("home") {
+                                        navController.navigate("onboarding") {
                                             popUpTo("auth") { inclusive = true }
                                         }
                                     } else {

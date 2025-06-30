@@ -21,6 +21,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(navController: NavController) {
 
+
     // Always redirect to auth screen after a short delay
     LaunchedEffect(Unit) {
         delay(2500) // 2.5 seconds delay

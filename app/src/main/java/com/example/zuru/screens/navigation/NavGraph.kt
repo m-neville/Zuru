@@ -18,6 +18,7 @@ import com.example.zuru.screens.exploreScreen.ExploreScreen
 import com.example.zuru.screens.homeScreen.HomeScreen
 import com.example.zuru.screens.myBookings.MyBookingsScreen
 import com.example.zuru.screens.myPayments.MyPaymentsScreen
+import com.example.zuru.screens.onboarding.OnboardingScreen
 import com.example.zuru.screens.profileScreen.ProfileScreen
 import com.example.zuru.screens.settings.SettingsScreen
 import com.example.zuru.screens.splashScreen.SplashScreen
@@ -104,6 +105,10 @@ fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
         composable("allReceipts") {
             AllReceiptsScreen(navController = navController)
         }
+        composable("onboarding") {
+            OnboardingScreen(navController)
+        }
+
         // Route for ReceiptScreen
         composable(
             route = "receipt/{destination}/{method}/{amount}/{timestamp}/{travelMode}/{vehicleType}/{dateofTravel}",

@@ -50,8 +50,8 @@ fun AllReceiptsScreen(navController: NavController) {
 
     // Filters
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedMethod by remember { mutableStateOf("All") }
-    val paymentMethods = listOf("All", "M-PESA", "PayPal", "Card")
+    var selectedTravelMode by remember { mutableStateOf("All") }
+    val travelModes = listOf("All", "Road", "Flight", "SGR")
 
     LaunchedEffect(currentUser) {
         if (currentUser?.email == null) {
@@ -91,7 +91,7 @@ fun AllReceiptsScreen(navController: NavController) {
     }
 
     val filteredReceipts = receiptsList.filter {
-        (selectedMethod == "All" || it.method == selectedMethod) &&
+        (selectedTravelMode == "All" || it.travelMode == selectedTravelMode) &&
                 it.destination.contains(searchQuery.text, ignoreCase = true)
     }
 
@@ -132,11 +132,12 @@ fun AllReceiptsScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Filter by Method:", color = Color.Black)
+                Text("Filter by Travel Mode:", color = Color.Black)
                 DropdownMenuFilter(
-                    options = paymentMethods,
-                    selectedOption = selectedMethod,
-                    onOptionSelected = { selectedMethod = it }
+                    options = travelModes,
+                    selectedOption = selectedTravelMode,
+                    onOptionSelected = { selectedTravelMode = it },
+                    label = "Travel Mode"
                 )
             }
 
@@ -159,7 +160,7 @@ fun AllReceiptsScreen(navController: NavController) {
 }
 
 @Composable
-fun DropdownMenuFilter(options: List<String>, selectedOption: String, onOptionSelected: (String) -> Unit) {
+fun DropdownMenuFilter(options: List<String>, selectedOption: String, onOptionSelected: (String) -> Unit, label: String) {
     var expanded by remember { mutableStateOf(false) }
 
     Box {
@@ -167,7 +168,7 @@ fun DropdownMenuFilter(options: List<String>, selectedOption: String, onOptionSe
             value = selectedOption,
             onValueChange = {},
             readOnly = true,
-            label = { Text("Method") },
+            label = { Text(label) },
             trailingIcon = {
                 IconButton(onClick = { expanded = true }) {
                     Icon(Icons.Filled.ArrowDropDown, contentDescription = null)

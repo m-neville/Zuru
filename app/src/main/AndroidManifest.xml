@@ -2,16 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <!-- Required permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <!-- For phone call -->
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -23,6 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Zuru"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,17 +26,14 @@
             android:theme="@style/Theme.Zuru">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-
-            <meta-data
-                android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyDhvxesgLL5vUASWb8i_L5MWywvlRSHmgE"/>
-
-
+        <!-- Google Maps API key (keep this secure and restricted in Google Console) -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDhvxesgLL5vUASWb8i_L5MWywvlRSHmgE" />
 
     </application>
 

@@ -35,13 +35,19 @@ fun HomeScreen(navController: NavController) {
     }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFFE0F7FA), Color(0xFFFFF9C4)) // Light Blue to Cream
+                )
+            )
     ) {
         // Background Image
         Image(
-            painter = painterResource(id = R.drawable.home_bground),
+            painter = painterResource(id = R.drawable.glasses),
             contentDescription = "Background",
-            contentScale = ContentScale.FillBounds,
+            contentScale = ContentScale.Fit,
             modifier = Modifier.fillMaxSize()
         )
 
@@ -51,7 +57,7 @@ fun HomeScreen(navController: NavController) {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color(0x80000000), Color(0xCC000000))
+                        colors = listOf(Color(0x40000000), Color(0x80000000)) // Adjusted overlay for lighter background
                     )
                 )
         )
@@ -77,14 +83,14 @@ fun HomeScreen(navController: NavController) {
                         Text(
                             text = "Welcome to",
                             style = MaterialTheme.typography.titleMedium,
-                            color = Color.White,
+                            color = Color.Black, // Changed text color for better readability on light background
                             fontSize = 22.sp
                         )
                         Text(
                             text = "Zuru Travel App",
                             style = MaterialTheme.typography.headlineMedium,
-                            color = Color.White,
-                            fontSize = 32.sp
+                            color = Color.Black, // Changed text color
+                            fontSize = 32.sp,
                         )
                     }
                 }
@@ -153,7 +159,7 @@ fun HomeButton(title: String, icon: Painter, onClick: () -> Unit) {
             .fillMaxWidth()
             .height(60.dp)
             .clickable { onClick() },
-        color = Color(0xFF006400),
+        color = Color(0xFF00796B), // Adjusted button color for better contrast
         shape = RoundedCornerShape(12.dp),
         shadowElevation = 8.dp
     ) {

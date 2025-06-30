@@ -11,11 +11,23 @@ import androidx.navigation.compose.rememberNavController
 import com.example.zuru.screens.navigation.NavGraph
 import com.example.zuru.ui.theme.ZuruTheme
 import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize Firebase and Firestore settings BEFORE setContent
         FirebaseApp.initializeApp(this)
+
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(true)
+            .build()
+
+        FirebaseFirestore.getInstance().firestoreSettings = settings
+
+        // Now launch your Compose UI
         setContent {
             ZuruTheme {
                 val navController = rememberNavController()
