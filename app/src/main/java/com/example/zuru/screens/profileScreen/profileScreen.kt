@@ -164,7 +164,19 @@ fun ProfileScreen(navController: NavController) {
                 Text("View All Receipts", color = Color.White)
             }
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = { navController.navigate("upcomingTrips") },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00796B))
+            ) {
+                Text("Upcoming Trips", color = Color.White)
+            }
+
             Spacer(modifier = Modifier.weight(1f))
+
+
 
             Button(
                 onClick = {
@@ -181,6 +193,9 @@ fun ProfileScreen(navController: NavController) {
             ) {
                 Text("Logout", fontSize = 16.sp, color = Color.White)
             }
+
+
+
         }
     }
 }

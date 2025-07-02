@@ -1,6 +1,7 @@
 [versions]
-agp = "8.10.1"
+agp = "8.11.0"
 airbnbLottieCompose = "6.3.0"
+datastorePreferences = "1.1.7"
 firebaseFirestoreKtx = "25.1.4"
 firebaseFirestoreKtxVersion = "24.4.5"
 kotlin = "2.0.21"
@@ -11,6 +12,7 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
+lifecycleViewmodelCompose = "2.9.1"
 lottieComposeVersion = "6.1.0"
 mapsCompose = "4.1.0"
 navigationCompose = "2.9.0"
@@ -26,6 +28,8 @@ transportRuntime = "4.0.0"
 [libraries]
 android-lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieComposeVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-ui-text = { module = "androidx.compose.ui:ui-text", version.ref = "uiText" }
 firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx" }

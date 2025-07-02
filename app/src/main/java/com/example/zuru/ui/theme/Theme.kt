@@ -1,58 +1,135 @@
 package com.example.zuru.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+// -- Define Color Schemes for Each Theme --
+private val DefaultLightColors = lightColorScheme(
+    primary = Color(0xFF00897B), // Teal
+    secondary = Color(0xFF4DB6AC),
+    background = Color(0xFFFFFFFF),
+    surface = Color(0xFFF5F5F5),
     onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    onSecondary = Color.Black,
+    onBackground = Color.Black,
+    onSurface = Color.Black
 )
 
+private val DefaultDarkColors = darkColorScheme(
+    primary = Color(0xFF00897B),
+    secondary = Color(0xFF4DB6AC),
+    background = Color(0xFF121212),
+    surface = Color(0xFF1E1E1E),
+    onPrimary = Color.Black,
+    onSecondary = Color.White,
+    onBackground = Color.White,
+    onSurface = Color.White
+)
+
+private val OceanBlueLightColors = lightColorScheme(
+    primary = Color(0xFF0277BD),
+    secondary = Color(0xFF4FC3F7),
+    background = Color.White,
+    surface = Color(0xFFF0F0F0),
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onBackground = Color.Black,
+    onSurface = Color.Black
+)
+
+private val OceanBlueDarkColors = darkColorScheme(
+    primary = Color(0xFF0277BD),
+    secondary = Color(0xFF4FC3F7),
+    background = Color(0xFF121212),
+    surface = Color(0xFF1E1E1E),
+    onPrimary = Color.Black,
+    onSecondary = Color.White,
+    onBackground = Color.White,
+    onSurface = Color.White
+)
+
+private val ForestGreenLightColors = lightColorScheme(
+    primary = Color(0xFF388E3C),
+    secondary = Color(0xFF81C784),
+    background = Color.White,
+    surface = Color(0xFFF7F7F7),
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onBackground = Color.Black,
+    onSurface = Color.Black
+)
+
+private val ForestGreenDarkColors = darkColorScheme(
+    primary = Color(0xFF388E3C),
+    secondary = Color(0xFF81C784),
+    background = Color(0xFF121212),
+    surface = Color(0xFF1E1E1E),
+    onPrimary = Color.Black,
+    onSecondary = Color.White,
+    onBackground = Color.White,
+    onSurface = Color.White
+)
+
+private val SunsetOrangeLightColors = lightColorScheme(
+    primary = Color(0xFFF57C00),
+    secondary = Color(0xFFFFB74D),
+    background = Color.White,
+    surface = Color(0xFFFDF6F0),
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onBackground = Color.Black,
+    onSurface = Color.Black
+)
+
+private val SunsetOrangeDarkColors = darkColorScheme(
+    primary = Color(0xFFF57C00),
+    secondary = Color(0xFFFFB74D),
+    background = Color(0xFF121212),
+    surface = Color(0xFF1E1E1E),
+    onPrimary = Color.Black,
+    onSecondary = Color.White,
+    onBackground = Color.White,
+    onSurface = Color.White
+)
+
+
+// -- AppThemeIdentifier Enum --
+//enum class AppThemeIdentifier(val id: String) {
+//    DEFAULT("default"),
+//    OCEAN_BLUE("ocean_blue"),
+//    FOREST_GREEN("forest_green"),
+//    SUNSET_ORANGE("sunset_orange");
+//
+//    companion object {
+//        fun fromId(id: String): AppThemeIdentifier {
+//            return AppThemeIdentifier.entries.find { it.id == id } ?: DEFAULT
+//        }
+//    }
+//}
+
+
+// -- ZuruAppTheme Composable --
 @Composable
-fun ZuruTheme(
+fun ZuruAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    themeIdentifier: AppThemeIdentifier = AppThemeIdentifier.DEFAULT,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colorScheme = when (themeIdentifier) {
+        AppThemeIdentifier.DEFAULT -> if (darkTheme) DefaultDarkColors else DefaultLightColors
+        AppThemeIdentifier.OCEAN_BLUE -> if (darkTheme) OceanBlueDarkColors else OceanBlueLightColors
+        AppThemeIdentifier.FOREST_GREEN -> if (darkTheme) ForestGreenDarkColors else ForestGreenLightColors
+        AppThemeIdentifier.SUNSET_ORANGE -> if (darkTheme) SunsetOrangeDarkColors else SunsetOrangeLightColors
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+//        shapes = Shapes,
         content = content
     )
 }

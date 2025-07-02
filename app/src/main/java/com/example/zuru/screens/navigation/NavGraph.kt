@@ -25,9 +25,11 @@ import com.example.zuru.screens.splashScreen.SplashScreen
 import com.example.zuru.screens.paymentsScreen.PaymentsScreen
 import com.example.zuru.screens.receiptsScreen.ReceiptScreen
 import com.example.zuru.screens.receiptsScreen.AllReceiptsScreen
+import com.example.zuru.screens.upcoming.UpcomingTripsScreen
+import com.example.zuru.screens.viewmodels.SettingsViewModel
 
 @Composable
-fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
+fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier, settingsViewModel: SettingsViewModel) {
     NavHost(
         navController = navController,
         startDestination = "splash",
@@ -62,7 +64,7 @@ fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
         }
 
         composable("settings") {
-            SettingsScreen(navController)
+            SettingsScreen(navController = navController, settingsViewModel = settingsViewModel)
         }
 
         composable("edit_profile") {
@@ -108,6 +110,10 @@ fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
         composable("onboarding") {
             OnboardingScreen(navController)
         }
+        composable("upcomingTrips") {
+             UpcomingTripsScreen(navController)
+        }
+
 
         // Route for ReceiptScreen
         composable(

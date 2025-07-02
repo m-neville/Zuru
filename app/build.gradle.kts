@@ -45,6 +45,8 @@ dependencies {
 
 
 
+    implementation(libs.androidx.datastore.preferences) // Check for latest version
+    implementation(libs.androidx.lifecycle.viewmodel.compose) // or la
     implementation (libs.android.lottie.compose)
     implementation (libs.androidx.ui.text)
     implementation(libs.firebase.firestore.ktx)
