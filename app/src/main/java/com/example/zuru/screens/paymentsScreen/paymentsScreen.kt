@@ -41,19 +41,24 @@ fun PaymentsScreen(navController: NavController, destination: String, amount: In
     val paymentMethod = "M-PESA"
     val travelModes = listOf("SGR", "Road", "Flight")
     val availableVehicles = listOf("Car", "Matatu", "Bus")
+    val tripType = listOf("One-way", "Round-trip")
 
     var selectedMethod by remember { mutableStateOf(paymentMethod) }
     var selectedTravelMode by remember { mutableStateOf(travelModes[0]) }
     var selectedVehicle by remember { mutableStateOf(availableVehicles[0]) }
+    var selectedTripType by remember { mutableStateOf(tripType[0]) }
 
     var selectedDate by remember { mutableStateOf("") }
+    var returnDate by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showReturnDatePicker by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
 
     var showAnimation by remember { mutableStateOf(false) }
     var paymentSuccessful by remember { mutableStateOf(false) }
 
-    val formattedAmount = NumberFormat.getNumberInstance(Locale.US).format(amount)
+    val finalAmount = if (selectedTripType == "Round-trip") (amount * 2) else amount
+    val formattedAmount = NumberFormat.getNumberInstance(Locale.US).format(finalAmount)
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.success_animation))
     val progress by animateLottieCompositionAsState(composition, isPlaying = true, iterations = 1)
@@ -68,16 +73,20 @@ fun PaymentsScreen(navController: NavController, destination: String, amount: In
 
             val encodedDestination = URLEncoder.encode(destination, StandardCharsets.UTF_8.toString())
             val encodedMethod = URLEncoder.encode(method, StandardCharsets.UTF_8.toString())
-            val encodedAmount = URLEncoder.encode(amount.toString(), StandardCharsets.UTF_8.toString())
+            val encodedAmount = URLEncoder.encode(finalAmount.toString(), StandardCharsets.UTF_8.toString())
             val encodedTravelMode = URLEncoder.encode(travelMode, StandardCharsets.UTF_8.toString())
             val encodedVehicleType = URLEncoder.encode(vehicleType, StandardCharsets.UTF_8.toString())
             val encodedDateofTravel = URLEncoder.encode(dateofTravel, StandardCharsets.UTF_8.toString())
-
-            delay(2500)
+            val encodedTripType = tripType
+            val encodedReturnDate = URLEncoder.encode(returnDate.ifEmpty { "N/A" }, StandardCharsets.UTF_8.toString())
 
             navController.navigate(
-                "receipt/$encodedDestination/$encodedMethod/$encodedAmount/$timestamp/$encodedTravelMode/$encodedVehicleType/$encodedDateofTravel"
-            ) {
+                "receipt/$encodedDestination/$encodedMethod/$encodedAmount/$timestamp/$encodedTravelMode/$encodedVehicleType/$encodedDateofTravel/$encodedTripType/$encodedReturnDate"
+            )
+
+
+
+             {
                 popUpTo("payments/$destination/$amount") { inclusive = true }
             }
 
@@ -116,6 +125,10 @@ fun PaymentsScreen(navController: NavController, destination: String, amount: In
                 ) {
                     Text("Complete your payment for the trip to $destination", style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp))
 
+                    DropdownField("Trip Type", selectedTripType, tripType) {
+                        selectedTripType = it
+                    }
+
                     OutlinedTextField(
                         value = selectedDate,
                         onValueChange = {},
@@ -132,35 +145,82 @@ fun PaymentsScreen(navController: NavController, destination: String, amount: In
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    if (showDatePicker) {
-                        val minDateCalendar = remember { Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 2) } }
+                    if (selectedTripType == "Round-trip") {
+                        OutlinedTextField(
+                            value = returnDate,
+                            onValueChange = {},
+                            label = { Text("Return Date") },
+                            readOnly = true,
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = "Select return date",
+                                    modifier = Modifier.clickable { showReturnDatePicker = true }
+                                )
+                            },
+                            textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    if (showDatePicker || showReturnDatePicker) {
+                        val today = remember { Calendar.getInstance() }
+
+                        // Minimum: Tomorrow
+                        val minDepartureDate = remember { Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) } }
+
+                        // For return: Must be at least one day after selectedDate
+                        val minReturnDate = remember(selectedDate) {
+                            val cal = Calendar.getInstance()
+                            if (selectedDate.isNotBlank()) {
+                                try {
+                                    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                                    cal.time = sdf.parse(selectedDate)!!
+                                    cal.add(Calendar.DAY_OF_YEAR, 1)
+                                } catch (e: Exception) {
+                                    cal.time = Date()
+                                    cal.add(Calendar.DAY_OF_YEAR, 2)
+                                }
+                            } else {
+                                cal.time = Date()
+                                cal.add(Calendar.DAY_OF_YEAR, 2)
+                            }
+                            cal
+                        }
 
                         val datePickerState = rememberDatePickerState(
-                            initialSelectedDateMillis = minDateCalendar.timeInMillis,
+                            initialSelectedDateMillis = (if (showReturnDatePicker) minReturnDate else minDepartureDate).timeInMillis,
                             selectableDates = object : SelectableDates {
                                 override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                                    return utcTimeMillis >= minDateCalendar.timeInMillis
+                                    return utcTimeMillis >= (if (showReturnDatePicker) minReturnDate else minDepartureDate).timeInMillis
                                 }
                             }
                         )
 
                         DatePickerDialog(
-                            onDismissRequest = { showDatePicker = false },
+                            onDismissRequest = {
+                                showDatePicker = false
+                                showReturnDatePicker = false
+                            },
                             confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        datePickerState.selectedDateMillis?.let { millis ->
-                                            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                            selectedDate = sdf.format(Date(millis))
-                                        }
-                                        showDatePicker = false
+                                TextButton(onClick = {
+                                    datePickerState.selectedDateMillis?.let { millis ->
+                                        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                                        val selected = sdf.format(Date(millis))
+                                        if (showDatePicker) selectedDate = selected
+                                        if (showReturnDatePicker) returnDate = selected
                                     }
-                                ) {
+                                    showDatePicker = false
+                                    showReturnDatePicker = false
+                                }) {
                                     Text("OK")
                                 }
                             },
                             dismissButton = {
-                                TextButton(onClick = { showDatePicker = false }) {
+                                TextButton(onClick = {
+                                    showDatePicker = false
+                                    showReturnDatePicker = false
+                                }) {
                                     Text("Cancel")
                                 }
                             }
@@ -168,6 +228,7 @@ fun PaymentsScreen(navController: NavController, destination: String, amount: In
                             DatePicker(state = datePickerState)
                         }
                     }
+
 
                     DropdownField("Travel Mode", selectedTravelMode, travelModes) {
                         selectedTravelMode = it
@@ -202,6 +263,7 @@ fun PaymentsScreen(navController: NavController, destination: String, amount: In
                         onClick = {
                             when {
                                 selectedDate.isBlank() -> Toast.makeText(context, "Please select travel date", Toast.LENGTH_SHORT).show()
+                                selectedTripType == "Round-trip" && returnDate.isBlank() -> Toast.makeText(context, "Please select return date", Toast.LENGTH_SHORT).show()
                                 else -> showConfirmDialog = true
                             }
                         },
@@ -225,8 +287,10 @@ fun PaymentsScreen(navController: NavController, destination: String, amount: In
                                 "email" to user?.email,
                                 "destination" to destination,
                                 "method" to selectedMethod,
-                                "amount" to amount,
+                                "amount" to finalAmount,
                                 "dateofTravel" to selectedDate,
+                                "returnDate" to if (selectedTripType == "Round-trip") returnDate else "N/A",
+                                "tripType" to selectedTripType,
                                 "travelMode" to selectedTravelMode,
                                 "vehicleType" to if (selectedTravelMode == "Road") selectedVehicle else "N/A",
                                 "timestamp" to Timestamp.now()
@@ -254,11 +318,11 @@ fun PaymentsScreen(navController: NavController, destination: String, amount: In
                     text = {
                         Column {
                             Text("Destination: $destination")
+                            Text("Trip Type: $selectedTripType")
                             Text("Date of Travel: $selectedDate")
+                            if (selectedTripType == "Round-trip") Text("Return Date: $returnDate")
                             Text("Travel Mode: $selectedTravelMode")
-                            if (selectedTravelMode == "Road") {
-                                Text("Vehicle Type: $selectedVehicle")
-                            }
+                            if (selectedTravelMode == "Road") Text("Vehicle Type: $selectedVehicle")
                             Text("Amount: KES $formattedAmount")
                             Text("Payment Method: $selectedMethod")
                         }

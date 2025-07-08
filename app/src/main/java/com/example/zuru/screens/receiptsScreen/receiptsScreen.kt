@@ -34,6 +34,8 @@ fun ReceiptScreen(
     travelMode: String,
     vehicleType: String,
     dateofTravel: String,
+    tripType: String = "One-way", // NEW PARAM
+    returnDate: String = ""        // NEW PARAM
 ) {
     val decodedDestination = URLDecoder.decode(destination, StandardCharsets.UTF_8.toString())
     val decodedMethod = URLDecoder.decode(method, StandardCharsets.UTF_8.toString())
@@ -41,6 +43,8 @@ fun ReceiptScreen(
     val decodedTravelMode = URLDecoder.decode(travelMode, StandardCharsets.UTF_8.toString())
     val decodedVehicleType = URLDecoder.decode(vehicleType, StandardCharsets.UTF_8.toString())
     val decodedTravelDate = URLDecoder.decode(dateofTravel, StandardCharsets.UTF_8.toString())
+    val decodedTripType = URLDecoder.decode(tripType, StandardCharsets.UTF_8.toString())
+    val decodedReturnDate = URLDecoder.decode(returnDate, StandardCharsets.UTF_8.toString())
 
     val formattedTimestamp = try {
         SimpleDateFormat("dd MMM yyyy, hh:mm a").format(Date(timestamp))
@@ -100,7 +104,6 @@ fun ReceiptScreen(
                         .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Optional receipt icon
                     Box(
                         modifier = Modifier
                             .size(64.dp)
@@ -123,7 +126,11 @@ fun ReceiptScreen(
                     )
 
                     ReceiptItem(label = "Destination", value = decodedDestination)
+                    ReceiptItem(label = "Trip Type", value = decodedTripType)
                     ReceiptItem(label = "Date of Travel", value = decodedTravelDate)
+                    if (decodedTripType == "Round-trip" && decodedReturnDate.isNotBlank()) {
+                        ReceiptItem(label = "Return Date", value = decodedReturnDate)
+                    }
                     ReceiptItem(label = "Travel Mode", value = decodedTravelMode)
                     if (decodedTravelMode == "Road") {
                         ReceiptItem(label = "Vehicle Type", value = decodedVehicleType)

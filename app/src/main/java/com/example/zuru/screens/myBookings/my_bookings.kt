@@ -3,6 +3,8 @@ package com.example.zuru.screens.myBookings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -40,7 +42,13 @@ fun MyBookingsScreen(navController: NavController) {
         topBar = {
             TopAppBar(
                 title = { Text("My Destinations") },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF004D40), titleContentColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF004D40), titleContentColor = Color.White),
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Filled.ArrowBack, "Back", tint = Color.White)
+                    }
+                }
+
             )
         }
     ) { padding ->

@@ -26,7 +26,7 @@ import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Data class
+// ✅ Updated data class
 data class ReceiptItem(
     val id: String = "",
     val destination: String = "",
@@ -35,9 +35,10 @@ data class ReceiptItem(
     val timestamp: Timestamp? = null,
     val dateofTravel: String = "",
     val travelMode: String = "",
-    val vehicleType: String = ""
+    val vehicleType: String = "",
+    val tripType: String = "One-way",
+    val returnDate: String = "N/A"
 )
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +49,6 @@ fun AllReceiptsScreen(navController: NavController) {
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Filters
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var selectedTravelMode by remember { mutableStateOf("All") }
     val travelModes = listOf("All", "Road", "Flight", "SGR")
@@ -75,7 +75,9 @@ fun AllReceiptsScreen(navController: NavController) {
                             timestamp = doc.getTimestamp("timestamp"),
                             dateofTravel = doc.getString("dateofTravel") ?: "",
                             travelMode = doc.getString("travelMode") ?: "",
-                            vehicleType = doc.getString("vehicleType") ?: ""
+                            vehicleType = doc.getString("vehicleType") ?: "",
+                            tripType = doc.getString("tripType") ?: "One-way",
+                            returnDate = doc.getString("returnDate") ?: "N/A"
                         )
                     } catch (e: Exception) {
                         null
@@ -84,7 +86,6 @@ fun AllReceiptsScreen(navController: NavController) {
 
                 isLoading = false
             }
-
             .addOnFailureListener {
                 errorMessage = "Failed to load receipts: ${it.message}"
                 isLoading = false
@@ -112,11 +113,7 @@ fun AllReceiptsScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0xFFE0F2F1), Color.White)
-                    )
-                )
+                .background(Brush.verticalGradient(listOf(Color(0xFFE0F2F1), Color.White)))
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
@@ -206,17 +203,17 @@ fun ReceiptCard(receipt: ReceiptItem, navController: NavController) {
         onClick = {
             val timestampLong = receipt.timestamp?.toDate()?.time ?: System.currentTimeMillis()
 
-            // Encode all parameters directly
             val encodedDestination = URLEncoder.encode(receipt.destination, StandardCharsets.UTF_8.toString())
             val encodedMethod = URLEncoder.encode(receipt.method, StandardCharsets.UTF_8.toString())
             val encodedAmount = URLEncoder.encode(receipt.amount, StandardCharsets.UTF_8.toString())
             val encodedTravelMode = URLEncoder.encode(receipt.travelMode, StandardCharsets.UTF_8.toString())
             val encodedVehicleType = URLEncoder.encode(receipt.vehicleType.ifEmpty { "N/A" }, StandardCharsets.UTF_8.toString())
-            val encodedDateOfTravel = URLEncoder.encode(receipt.dateofTravel, StandardCharsets.UTF_8.toString()) // ✅ Corrected
+            val encodedDateOfTravel = URLEncoder.encode(receipt.dateofTravel, StandardCharsets.UTF_8.toString())
+            val encodedTripType = URLEncoder.encode(receipt.tripType, StandardCharsets.UTF_8.toString())
+            val encodedReturnDate = URLEncoder.encode(receipt.returnDate.ifEmpty { "N/A" }, StandardCharsets.UTF_8.toString())
 
-            // Navigate to ReceiptScreen with all fields
             navController.navigate(
-                "receipt/$encodedDestination/$encodedMethod/$encodedAmount/$timestampLong/$encodedTravelMode/$encodedVehicleType/$encodedDateOfTravel"
+                "receipt/$encodedDestination/$encodedMethod/$encodedAmount/$timestampLong/$encodedTravelMode/$encodedVehicleType/$encodedDateOfTravel/$encodedTripType/$encodedReturnDate"
             )
         },
         shape = MaterialTheme.shapes.medium
@@ -228,10 +225,14 @@ fun ReceiptCard(receipt: ReceiptItem, navController: NavController) {
                 color = Color(0xFF004D40)
             )
             Spacer(modifier = Modifier.height(4.dp))
+            Text("Trip Type: ${receipt.tripType}", color = Color.DarkGray)
+            Text("Date of Travel: ${receipt.dateofTravel}", color = Color.DarkGray)
+            if (receipt.tripType == "Round-trip") {
+                Text("Return Date: ${receipt.returnDate}", color = Color.DarkGray)
+            }
+            Text("Travel Mode: ${receipt.travelMode}", color = Color.DarkGray)
             Text("Amount: KES ${receipt.amount}", color = Color.DarkGray)
             Text("Method: ${receipt.method}", color = Color.DarkGray)
-            Text("Date of Travel: ${receipt.dateofTravel}", color = Color.DarkGray)
-            Text("Travel Mode: ${receipt.travelMode}", color = Color.DarkGray)
             receipt.timestamp?.toDate()?.let {
                 Text("Date: ${dateFormatter.format(it)}", color = Color.Gray)
             }

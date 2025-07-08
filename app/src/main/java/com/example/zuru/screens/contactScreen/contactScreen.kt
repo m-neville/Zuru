@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -33,10 +34,20 @@ fun ContactUsScreen(navController: NavHostController) {
         topBar = {
             TopAppBar(
                 title = { Text("Contact Us") },
+                navigationIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.back),
+                        contentDescription = "Back",
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                            .size(24.dp) // Added to reduce the size of the back button
+                            .clickable { navController.popBackStack() },
+                        tint = Color.White
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF00796B),
-                    titleContentColor = Color.White
-                )
+                    titleContentColor = Color.White                )
             )
         }
     ) { padding ->

@@ -120,10 +120,10 @@ fun NavGraph(
             OnboardingScreen(navController)
         }
 
-        
+
 
         composable(
-            route = "receipt/{destination}/{method}/{amount}/{timestamp}/{travelMode}/{vehicleType}/{dateofTravel}",
+            route = "receipt/{destination}/{method}/{amount}/{timestamp}/{travelMode}/{vehicleType}/{dateofTravel}/{tripType}/{returnDate}",
             arguments = listOf(
                 navArgument("destination") { type = NavType.StringType },
                 navArgument("method") { type = NavType.StringType },
@@ -132,26 +132,23 @@ fun NavGraph(
                 navArgument("travelMode") { type = NavType.StringType },
                 navArgument("vehicleType") { type = NavType.StringType },
                 navArgument("dateofTravel") { type = NavType.StringType },
+                navArgument("tripType") { type = NavType.StringType },
+                navArgument("returnDate") { type = NavType.StringType }
             )
-        ) {
-            val destination = it.arguments?.getString("destination") ?: ""
-            val method = it.arguments?.getString("method") ?: ""
-            val amount = it.arguments?.getString("amount") ?: ""
-            val timestamp = it.arguments?.getLong("timestamp") ?: 0L
-            val travelMode = it.arguments?.getString("travelMode") ?: ""
-            val vehicleType = it.arguments?.getString("vehicleType") ?: ""
-            val dateofTravel = it.arguments?.getString("dateofTravel") ?: ""
-
+        ) { backStackEntry ->
             ReceiptScreen(
-                navController,
-                destination,
-                method,
-                amount,
-                timestamp,
-                travelMode,
-                vehicleType,
-                dateofTravel
+                navController = navController,
+                destination = backStackEntry.arguments?.getString("destination") ?: "",
+                method = backStackEntry.arguments?.getString("method") ?: "",
+                amount = backStackEntry.arguments?.getString("amount") ?: "",
+                timestamp = backStackEntry.arguments?.getLong("timestamp") ?: 0L,
+                travelMode = backStackEntry.arguments?.getString("travelMode") ?: "",
+                vehicleType = backStackEntry.arguments?.getString("vehicleType") ?: "",
+                dateofTravel = backStackEntry.arguments?.getString("dateofTravel") ?: "",
+                tripType = backStackEntry.arguments?.getString("tripType") ?: "One-way",
+                returnDate = backStackEntry.arguments?.getString("returnDate") ?: ""
             )
         }
+
     }
 }
