@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -29,17 +27,18 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentsScreen(navController: NavController, destination: String) {
+fun PaymentsScreen(navController: NavController, destination: String, amount: Int) {
     val context = LocalContext.current
     val firestore = FirebaseFirestore.getInstance()
     val user = FirebaseAuth.getInstance().currentUser
 
-    val paymentMethod = "M-PESA" // Only M-PESA is accepted
+    val paymentMethod = "M-PESA"
     val travelModes = listOf("SGR", "Road", "Flight")
     val availableVehicles = listOf("Car", "Matatu", "Bus")
 
@@ -51,9 +50,10 @@ fun PaymentsScreen(navController: NavController, destination: String) {
     var showDatePicker by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
 
-    var amount by remember { mutableStateOf("") }
     var showAnimation by remember { mutableStateOf(false) }
     var paymentSuccessful by remember { mutableStateOf(false) }
+
+    val formattedAmount = NumberFormat.getNumberInstance(Locale.US).format(amount)
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.success_animation))
     val progress by animateLottieCompositionAsState(composition, isPlaying = true, iterations = 1)
@@ -68,7 +68,7 @@ fun PaymentsScreen(navController: NavController, destination: String) {
 
             val encodedDestination = URLEncoder.encode(destination, StandardCharsets.UTF_8.toString())
             val encodedMethod = URLEncoder.encode(method, StandardCharsets.UTF_8.toString())
-            val encodedAmount = URLEncoder.encode(amount, StandardCharsets.UTF_8.toString())
+            val encodedAmount = URLEncoder.encode(amount.toString(), StandardCharsets.UTF_8.toString())
             val encodedTravelMode = URLEncoder.encode(travelMode, StandardCharsets.UTF_8.toString())
             val encodedVehicleType = URLEncoder.encode(vehicleType, StandardCharsets.UTF_8.toString())
             val encodedDateofTravel = URLEncoder.encode(dateofTravel, StandardCharsets.UTF_8.toString())
@@ -78,7 +78,7 @@ fun PaymentsScreen(navController: NavController, destination: String) {
             navController.navigate(
                 "receipt/$encodedDestination/$encodedMethod/$encodedAmount/$timestamp/$encodedTravelMode/$encodedVehicleType/$encodedDateofTravel"
             ) {
-                popUpTo("payments/$destination") { inclusive = true }
+                popUpTo("payments/$destination/$amount") { inclusive = true }
             }
 
             paymentSuccessful = false
@@ -133,7 +133,17 @@ fun PaymentsScreen(navController: NavController, destination: String) {
                     )
 
                     if (showDatePicker) {
-                        val datePickerState = rememberDatePickerState()
+                        val minDateCalendar = remember { Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 2) } }
+
+                        val datePickerState = rememberDatePickerState(
+                            initialSelectedDateMillis = minDateCalendar.timeInMillis,
+                            selectableDates = object : SelectableDates {
+                                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                                    return utcTimeMillis >= minDateCalendar.timeInMillis
+                                }
+                            }
+                        )
+
                         DatePickerDialog(
                             onDismissRequest = { showDatePicker = false },
                             confirmButton = {
@@ -147,6 +157,11 @@ fun PaymentsScreen(navController: NavController, destination: String) {
                                     }
                                 ) {
                                     Text("OK")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showDatePicker = false }) {
+                                    Text("Cancel")
                                 }
                             }
                         ) {
@@ -166,17 +181,17 @@ fun PaymentsScreen(navController: NavController, destination: String) {
                     }
 
                     OutlinedTextField(
-                        value = amount,
-                        onValueChange = { amount = it },
-                        label = { Text("Amount (KES)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        value = "KES $formattedAmount",
+                        onValueChange = {},
+                        label = { Text("Amount") },
+                        readOnly = true,
                         textStyle = LocalTextStyle.current.copy(color = Color.Black),
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     OutlinedTextField(
                         value = selectedMethod,
-                        onValueChange = { /* No change allowed */ },
+                        onValueChange = { },
                         label = { Text("Payment Method") },
                         readOnly = true,
                         textStyle = LocalTextStyle.current.copy(color = Color.Black),
@@ -186,7 +201,6 @@ fun PaymentsScreen(navController: NavController, destination: String) {
                     Button(
                         onClick = {
                             when {
-                                amount.isBlank() -> Toast.makeText(context, "Please enter an amount", Toast.LENGTH_SHORT).show()
                                 selectedDate.isBlank() -> Toast.makeText(context, "Please select travel date", Toast.LENGTH_SHORT).show()
                                 else -> showConfirmDialog = true
                             }
@@ -245,7 +259,7 @@ fun PaymentsScreen(navController: NavController, destination: String) {
                             if (selectedTravelMode == "Road") {
                                 Text("Vehicle Type: $selectedVehicle")
                             }
-                            Text("Amount: KES $amount")
+                            Text("Amount: KES $formattedAmount")
                             Text("Payment Method: $selectedMethod")
                         }
                     }

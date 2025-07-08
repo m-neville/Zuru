@@ -25,11 +25,15 @@ import com.example.zuru.screens.splashScreen.SplashScreen
 import com.example.zuru.screens.paymentsScreen.PaymentsScreen
 import com.example.zuru.screens.receiptsScreen.ReceiptScreen
 import com.example.zuru.screens.receiptsScreen.AllReceiptsScreen
-import com.example.zuru.screens.upcoming.UpcomingTripsScreen
+
 import com.example.zuru.screens.viewmodels.SettingsViewModel
 
 @Composable
-fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier, settingsViewModel: SettingsViewModel) {
+fun NavGraph(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    settingsViewModel: SettingsViewModel
+) {
     NavHost(
         navController = navController,
         startDestination = "splash",
@@ -74,17 +78,22 @@ fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier, se
         composable("change_password") {
             ChangePasswordScreen(navController)
         }
+
         composable("about") {
             AboutUsScreen(navController)
         }
 
-
+        // ✅ Updated PaymentsScreen to accept amount (Int)
         composable(
-            route = "payments/{destination}",
-            arguments = listOf(navArgument("destination") { type = NavType.StringType })
+            route = "payments/{destination}/{amount}",
+            arguments = listOf(
+                navArgument("destination") { type = NavType.StringType },
+                navArgument("amount") { type = NavType.IntType }
+            )
         ) { backStackEntry ->
             val destination = backStackEntry.arguments?.getString("destination") ?: ""
-            PaymentsScreen(navController, destination)
+            val amount = backStackEntry.arguments?.getInt("amount") ?: 0
+            PaymentsScreen(navController, destination, amount)
         }
 
         composable(
@@ -103,19 +112,16 @@ fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier, se
             MyPaymentsScreen(navController)
         }
 
-        // Route for AllReceiptsScreen
         composable("allReceipts") {
             AllReceiptsScreen(navController = navController)
         }
+
         composable("onboarding") {
             OnboardingScreen(navController)
         }
-        composable("upcomingTrips") {
-             UpcomingTripsScreen(navController)
-        }
 
+        
 
-        // Route for ReceiptScreen
         composable(
             route = "receipt/{destination}/{method}/{amount}/{timestamp}/{travelMode}/{vehicleType}/{dateofTravel}",
             arguments = listOf(

@@ -166,13 +166,7 @@ fun ProfileScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(
-                onClick = { navController.navigate("upcomingTrips") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00796B))
-            ) {
-                Text("Upcoming Trips", color = Color.White)
-            }
+
 
             Spacer(modifier = Modifier.weight(1f))
 

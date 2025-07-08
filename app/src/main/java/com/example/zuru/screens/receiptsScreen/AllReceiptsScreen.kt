@@ -71,7 +71,7 @@ fun AllReceiptsScreen(navController: NavController) {
                             id = doc.id,
                             destination = doc.getString("destination") ?: "",
                             method = doc.getString("method") ?: "",
-                            amount = doc.getString("amount") ?: "",
+                            amount = doc.get("amount")?.toString() ?: "",
                             timestamp = doc.getTimestamp("timestamp"),
                             dateofTravel = doc.getString("dateofTravel") ?: "",
                             travelMode = doc.getString("travelMode") ?: "",
@@ -81,6 +81,7 @@ fun AllReceiptsScreen(navController: NavController) {
                         null
                     }
                 }
+
                 isLoading = false
             }
 

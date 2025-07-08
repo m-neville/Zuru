@@ -43,8 +43,9 @@ android {
 dependencies {
 
 
-
-
+    implementation(libs.material)
+    implementation("com.google.android.libraries.places:places:3.3.0")
+    implementation(libs.places)
     implementation(libs.androidx.datastore.preferences) // Check for latest version
     implementation(libs.androidx.lifecycle.viewmodel.compose) // or la
     implementation (libs.android.lottie.compose)
